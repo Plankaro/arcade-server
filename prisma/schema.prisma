@@ -6,6 +6,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+model Booking {
+  id String @id @default(auto()) @map("_id") @db.ObjectId()
+  bookingId String @unique
 }

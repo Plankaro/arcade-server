@@ -1,0 +1,7 @@
+node_modules
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+.gitignore
+.gitkeep
