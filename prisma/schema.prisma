@@ -15,14 +15,34 @@ enum PropertyType {
   Residential
 }
 
+enum BookingStatusType {
+  confirm
+  cancled
+  pending
+}
+
 model Booking {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId()
-  bookingId    String       @unique
-  propertyType PropertyType @unique
-  floor        String       @unique
-  room         String       @unique
-  userName     String
-  userEmail    String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id             String            @id @default(auto()) @map("_id") @db.ObjectId()
+  isTrash        Boolean           @default(false)
+  bookingId      String            @unique
+  propertyType   PropertyType      @unique
+  floor          String            @unique
+  room           String            @unique
+  userName       String
+  isBooked       BookingStatusType @default(pending)
+  userEmail      String
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  ConfirmBooking ConfirmBooking[]
+}
+
+model ConfirmBooking {
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId()
+  isTrash       Boolean           @default(false)
+  bookingStatus BookingStatusType @default(confirm)
+  bookedRoom    Booking           @relation(fields: [bookingId], references: [id])
+  bookingId     String            @unique @db.ObjectId()
+  expiresAt     DateTime
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }

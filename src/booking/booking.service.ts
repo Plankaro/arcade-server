@@ -1,13 +1,11 @@
 import { ConflictException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prismaORM/prisma.service";
 import { BookingDto } from "./dto/booking.dto";
-
 import { v4 as uuidv4 } from "uuid";
 
-interface ReturnMessage {
-    success: boolean;
-    message: string;
-}
+import { ReturnMessage } from "src/utils/returnType";
+
+
 
 @Injectable()
 export class BookingService {
@@ -15,6 +13,8 @@ export class BookingService {
 
     async bookRoom(details: BookingDto): Promise<ReturnMessage> {
         try {
+
+            //check if room is already booked or not
             const isAlreasyBoooked = await this.prisma.booking.findUnique({
                 where: {
                     propertyType: details.propertyType,
@@ -23,10 +23,15 @@ export class BookingService {
                 },
             });
 
+            //if already booked then throw exception
             if (isAlreasyBoooked) {
                 throw new ConflictException("This Room already booked");
             }
+
+            //generate unique id for each room created
             const bookingId = uuidv4();
+
+            //create booking 
             await this.prisma.booking.create({
                 data: {
                     ...details,
@@ -34,6 +39,7 @@ export class BookingService {
                 },
             });
 
+            //send response
             return {
                 success: true,
                 message: "boooking created successfull",
