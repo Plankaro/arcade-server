@@ -1,6 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { ConfirmBookingDto } from './dto/confirm-booking.dto';
+import { ConfirmBookingDto, ReleaseBookingDto } from './dto/confirm-booking.dto';
 import { ReturnMessage } from 'src/utils/returnType';
 
 @Controller('admin')
@@ -10,7 +10,11 @@ export class AdminController {
     @Post()
     confirmBooking(@Body() details: ConfirmBookingDto): Promise<ReturnMessage> {
         return this.adminService.confirmBooking(details)
+    }
 
+    @Put()
+    ReleaseBooking(@Body() id : ReleaseBookingDto): Promise<ReturnMessage>{
+        return this.adminService.ReleaseBooking(id)
     }
 
 

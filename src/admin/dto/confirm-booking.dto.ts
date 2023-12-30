@@ -13,3 +13,10 @@ export class ConfirmBookingDto {
   bookingId: string;
 
 }
+
+export class ReleaseBookingDto{
+  @IsNotEmpty()
+  @IsString()
+  @IsMongoId()
+  bookingId: string;
+}
