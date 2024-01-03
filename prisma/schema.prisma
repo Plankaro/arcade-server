@@ -15,6 +15,16 @@ enum PropertyType {
   Residential
 }
 
+enum RoleType {
+  ADMIN
+  USER
+}
+
+enum AccountProviderType {
+  GOOGLE
+  CREDENTIAL
+}
+
 enum BookingStatusType {
   confirm
   cancled
@@ -45,4 +55,37 @@ model ConfirmBooking {
   expiresAt     DateTime
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
+}
+
+model Account {
+  id           String              @id @default(auto()) @map("_id") @db.ObjectId()
+  isTrash      Boolean             @default(false)
+  provider     AccountProviderType
+  providerId   String
+  username     String
+  email        String?
+  mobileNumber String?
+  passwordHash String?
+  user         User                @relation(fields: [userId], references: [id])
+  userId       String              @db.ObjectId()
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@map("accounts")
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId()
+  isTrash       Boolean   @default(false)
+  email         String    @unique
+  firstName     String
+  role          RoleType
+  lastName      String
+  mobileNumber  String    @unique
+  country       String
+  region        String
+  emailVerified Boolean   @default(false)
+  accounts       Account[]
+
+  @@map("users")
 }

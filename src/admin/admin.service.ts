@@ -5,11 +5,20 @@ import {
     ReleaseBookingDto,
 } from "./dto/confirm-booking.dto";
 import { ReturnMessage } from "src/utils/returnType";
-import { BookingStatusType } from "@prisma/client";
+import { BookingStatusType, Prisma } from "@prisma/client";
 
 @Injectable()
 export class AdminService {
     constructor(private readonly prisma: PrismaService) { }
+
+    async getAllBooking(): Promise<Prisma.BookingCreateInput[]> {
+        return this.prisma.booking.findMany({
+            where: {
+                isTrash: false
+            }
+        })
+
+    }
 
     async confirmBooking(details: ConfirmBookingDto): Promise<ReturnMessage> {
         try {

@@ -32,18 +32,18 @@ export class EnvironmentVariables {
     @IsNotEmpty()
     DATABASE_URL: string;
 
-    // @IsNotEmpty()
-    // JWT_SECRET: string;
+    @IsNotEmpty()
+    JWT_SECRET: string;
 
-    // @IsNotEmpty()
-    // JWT_EXPIRATION_TIME: string;
+    @IsNotEmpty()
+    JWT_EXPIRATION_TIME: string;
 
-    // @Type(() => Number)
-    // @IsNotEmpty()
-    // COOKIE_EXPIRATION_TIME: number;
+    @Type(() => Number)
+    @IsNotEmpty()
+    COOKIE_EXPIRATION_TIME: number;
 
-    // @IsNotEmpty()
-    // BCRYPT_SALT_ROUNDS: number;
+    @IsNotEmpty()
+    BCRYPT_SALT_ROUNDS: number;
 }
 
 export function validate(config: Record<string, unknown>) {
