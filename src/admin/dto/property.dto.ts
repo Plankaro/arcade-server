@@ -27,3 +27,8 @@ class Rooms {
     @IsString()
     name: string;
 }
+
+export class PropertyTypes {
+    @IsEnum(PropertyType)
+    type: PropertyType
+}

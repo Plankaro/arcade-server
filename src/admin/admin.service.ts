@@ -10,7 +10,7 @@ import {
 } from "./dto/confirm-booking.dto";
 import { ReturnMessage } from "src/utils/returnType";
 import { BookingStatusType, LockedRoomType, Prisma } from "@prisma/client";
-import { PropertyDto } from "./dto/property.dto";
+import { PropertyDto, PropertyTypes } from "./dto/property.dto";
 
 @Injectable()
 export class AdminService {
@@ -52,14 +52,19 @@ export class AdminService {
     try {
       // console.log(details)
       const { bookingId, roomId, ...rest } = details;
-      const isBooked = await this.prisma.booking.findUnique({
-        where: {
-          isTrash: false,
-          id: bookingId,
-        },
-      });
-      if (!isBooked) {
-        throw new NotFoundException("Booking not found");
+      console.log(details)
+      if(details.isBooked !== "locked"){
+        // let isAllreadyBooked ;
+         
+      const  isAllreadyBooked = await this.prisma.booking.findUnique({
+         where: {
+           isTrash: false,
+           id: bookingId,
+         },
+       });
+       if (!isAllreadyBooked) {
+         throw new NotFoundException("Booking not found");
+       }
       }
       if (details.isBooked === "pending") {
         console.log("called");
@@ -105,6 +110,18 @@ export class AdminService {
               },
             });
           });
+      } else if (details.isBooked === "locked") {
+        await this.prisma.rooms.update({
+          where: {
+            isTrash: false,
+            id: roomId
+          }, data: {
+            isBooked: BookingStatusType.confirm,
+            lock: LockedRoomType.locked
+          }
+        })
+
+
       } else {
         await this.prisma.booking
           .update({
@@ -180,27 +197,66 @@ export class AdminService {
     }
   }
 
-  getAllProperty(): Promise<any> {
+  getAllProperty(PropertyType: PropertyTypes): Promise<any> {
     return this.prisma.property.findMany({
+      where: {
+        isTrash: false,
+        type: PropertyType.type
+
+      },
       select: {
-        id:true,
+        id: true,
         type: true,
         floors: {
           select: {
-            id:true,
+            id: true,
             name: true,
             rooms: {
               select: {
-                id:true,
+                id: true,
                 name: true,
-                isBooked:true,
-                lock:true,
+                isBooked: true,
+                lock: true,
               },
             },
           },
         },
       },
     });
+  }
+
+  async getAllDetails(): Promise<any> {
+    const totalBooking = await this.prisma.booking.count({
+      where: {
+        isTrash: false
+      }
+    })
+    const pendingApproval = await this.prisma.booking.count({
+      where: {
+        isTrash: false,
+        isBooked: BookingStatusType.notConfirmed
+      }
+    })
+
+    const twentyFourHoursAgo = new Date();
+    twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+
+    const dayBooking = await this.prisma.booking.count({
+      where: {
+        isTrash: false,
+        createdAt: {
+          gte: twentyFourHoursAgo
+        }
+      }
+    });
+
+    return {
+      totalBooking,
+      pendingApproval,
+      dayBooking
+    };
+
+
   }
 
   async ReleaseBooking(details: ReleaseBookingDto): Promise<ReturnMessage> {
@@ -244,7 +300,7 @@ export class AdminService {
   }
   async LockBooking(details: ReleaseBookingDto): Promise<ReturnMessage> {
     try {
-      const bookings = await this.prisma.booking.findUnique({
+      const bookings = await this.prisma.rooms.findUnique({
         where: {
           isTrash: false,
           id: details.id,
@@ -256,7 +312,7 @@ export class AdminService {
         throw new NotFoundException("bookings not found");
       }
 
-      await this.prisma.booking.update({
+      await this.prisma.rooms.update({
         where: {
           isTrash: false,
           id: details.id,

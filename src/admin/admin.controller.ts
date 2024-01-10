@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ConfirmBookingDto, ReleaseBookingDto } from './dto/confirm-booking.dto';
 import { ReturnMessage } from 'src/utils/returnType';
 import { Prisma, Property } from '@prisma/client';
-import { PropertyDto } from './dto/property.dto';
+import { PropertyDto, PropertyTypes } from './dto/property.dto';
+import { SkipJwt } from 'src/auth/decorators/jwt/skip-jwt.decorator';
 
 @Controller('admin')
 export class AdminController {
@@ -26,13 +27,19 @@ export class AdminController {
     addProperty(@Body() details: PropertyDto): Promise<ReturnMessage> {
         return this.adminService.addProperty(details)
     }
-    @Get("/property")
-    getAllProperty(): Promise<any> {
-        return this.adminService.getAllProperty()
+    @SkipJwt()
+    @Get("/details")
+    getAllDetails(): Promise<any> {
+        return this.adminService.getAllDetails()
+    }
+    
+    @Get("/:type")
+    getAllProperty(@Param() PropertyType: PropertyTypes): Promise<any> {
+        return this.adminService.getAllProperty(PropertyType)
     }
 
 
-
+   
     @Put()
     ReleaseBooking(@Body() id: ReleaseBookingDto): Promise<ReturnMessage> {
         return this.adminService.ReleaseBooking(id)
