@@ -29,6 +29,4 @@ export class GetBookingDto {
     @IsEmail()
     userEmail: string;
 
-    @ValidateNested()
-    ConfirmBooking: Prisma.ConfirmBookingCreateInput[]
 }

@@ -1,24 +1,38 @@
 import { PropertyType } from "@prisma/client";
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class BookingDto {
     @IsNotEmpty()
     @IsEnum(PropertyType)
-    propertyType: PropertyType;
+    type: PropertyType;
 
     @IsNotEmpty()
     @IsString()
-    floor: string;
+    @IsMongoId()
+    floorId: string;
 
     @IsNotEmpty()
     @IsString()
-    room: string;
+    @IsMongoId()
+    roomId: string;
 
     @IsNotEmpty()
     @IsString()
     userName: string;
 
     @IsNotEmpty()
+    @IsString()
+    firstName: string;
+
+    @IsNotEmpty()
+    @IsString()
+    lastName: string;
+
+    @IsOptional()
+    @IsString()
+    description?: string;
+
+    @IsNotEmpty()
     @IsEmail()
-    userEmail: string;
+    email: string;
 }

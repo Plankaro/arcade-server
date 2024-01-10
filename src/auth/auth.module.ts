@@ -29,7 +29,7 @@ import { EnvironmentVariables } from '../env.validation';
     AuthService,
     LocalStrategy,
     JwtStrategy,
-    GoogleStrategy,
+    // GoogleStrategy,
     {
       provide: APP_GUARD,
       useClass: JwtGuard,

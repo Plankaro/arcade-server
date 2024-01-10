@@ -20,12 +20,10 @@ import {
 import { LocalUser, SessionUser } from './interfaces/user.interface';
 import { GoogleAuthGuards } from './gaurd/geegle.guard';
 import { RoleType } from '@prisma/client';
-import { YoutubeService } from './strategy/youtube.strategy';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService,
-    private readonly youtubeService: YoutubeService
   ) { }
 
   @SkipJwt()
@@ -52,13 +50,7 @@ export class AuthController {
   @Get('/google')
   @UseGuards(GoogleAuthGuards)
   async googleAuth() { }
-
-  @SkipJwt()
-  @Get('/youtube')
-  // @UseGuards(YoutubeAuthGuards)
-  async youtubeAuth() {
-    return this.youtubeService.getYouTubeVideos()
-  }
+  
 
   // google login redirect page
   @SkipJwt()

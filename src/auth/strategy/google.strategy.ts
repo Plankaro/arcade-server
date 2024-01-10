@@ -3,8 +3,8 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 
 import * as dotenv from 'dotenv';
-import { AuthService } from 'auth/auth.service';
 import { GoogleProfileInterface } from '../interfaces/google-profile.interface';
+import { AuthService } from '../auth.service';
 
 dotenv.config();
 

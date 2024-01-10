@@ -9,6 +9,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { EnvironmentVariables, validate } from "../env.validation";
 import { PrismaModule } from "src/prismaORM/prisma.module";
 import { AdminModule } from "src/admin/admin.module";
+import { AuthModule } from "src/auth/auth.module";
+import { UserModule } from "src/user/user.module";
+import { EmailModule } from "src/email/email.module";
+import { CloudinaryModule } from "src/cloudinary/cloudinary.module";
 
 const config = new ConfigService<EnvironmentVariables>()
 
@@ -23,8 +27,12 @@ const config = new ConfigService<EnvironmentVariables>()
       validate,
     }),
     PrismaModule,
+    CloudinaryModule,
+    AuthModule,
+    UserModule,
     BookingModule,
-    AdminModule
+    AdminModule,
+    EmailModule
   ],
   controllers: [AppController, BookingController],
   providers: [AppService, BookingService],

@@ -27,34 +27,53 @@ enum AccountProviderType {
 
 enum BookingStatusType {
   confirm
-  cancled
+  cancelled
+  notConfirmed
   pending
+  locked
+}
+
+enum LockedRoomType {
+  locked
+  normal
 }
 
 model Booking {
-  id             String            @id @default(auto()) @map("_id") @db.ObjectId()
-  isTrash        Boolean           @default(false)
-  bookingId      String            @unique
-  propertyType   PropertyType      @unique
-  floor          String            @unique
-  room           String            @unique
-  userName       String
-  isBooked       BookingStatusType @default(pending)
-  userEmail      String
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  ConfirmBooking ConfirmBooking[]
-}
-
-model ConfirmBooking {
   id            String            @id @default(auto()) @map("_id") @db.ObjectId()
   isTrash       Boolean           @default(false)
-  bookingStatus BookingStatusType @default(confirm)
-  bookedRoom    Booking           @relation(fields: [bookingId], references: [id])
-  bookingId     String            @unique @db.ObjectId()
-  expiresAt     DateTime
+  bookingId     String            @unique
+  bookingAction BookingStatusType @default(notConfirmed)
+  type          PropertyType
+  email         String            @unique
+  userName      String?
+  firstName     String
+  lastName      String
+  description   String?
+  lock          LockedRoomType    @default(normal)
+  isBooked      BookingStatusType @default(pending)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
+  room          Rooms[]
+  floor         Floor[]
+
+  @@map("bookings")
+}
+
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId()
+  isActive  Boolean  @default(true)
+  ip        String   @default("")
+  browser   String   @default("")
+  os        String   @default("")
+  device    String   @default("")
+  expiryAt  DateTime
+  role      String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sessions")
 }
 
 model Account {
@@ -79,13 +98,48 @@ model User {
   isTrash       Boolean   @default(false)
   email         String    @unique
   firstName     String
-  role          RoleType
+  roles         RoleType
   lastName      String
   mobileNumber  String    @unique
   country       String
   region        String
   emailVerified Boolean   @default(false)
-  accounts       Account[]
+  accounts      Account[]
+  Session       Session[]
 
   @@map("users")
+}
+
+model Rooms {
+  id        String            @id @default(auto()) @map("_id") @db.ObjectId()
+  isTrash   Boolean           @default(false)
+  name      String            @unique
+  lock      LockedRoomType    @default(normal)
+  isBooked  BookingStatusType @default(pending)
+  Floor     Floor?            @relation(fields: [floorId], references: [id])
+  floorId   String?           @db.ObjectId()
+  Booking   Booking?          @relation(fields: [bookingId], references: [id])
+  bookingId String?           @db.ObjectId()
+
+  @@map("rooms")
+}
+
+model Floor {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId()
+  isTrash    Boolean   @default(false)
+  name       String    @unique
+  rooms      Rooms[]
+  Property   Property? @relation(fields: [propertyId], references: [id])
+  propertyId String?   @db.ObjectId()
+  Booking    Booking?  @relation(fields: [bookingId], references: [id])
+  bookingId  String?   @db.ObjectId()
+
+  @@map("floors")
+}
+
+model Property {
+  id      String       @id @default(auto()) @map("_id") @db.ObjectId()
+  isTrash Boolean      @default(false)
+  type    PropertyType
+  floors  Floor[]
 }

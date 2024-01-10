@@ -86,7 +86,7 @@ export class UserService {
                 },
               }),
             ...rest,
-           role:RoleType.ADMIN,
+           roles:RoleType.ADMIN,
             accounts: {
               create: {
                 provider: AccountProviderType.CREDENTIAL,

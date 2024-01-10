@@ -37,20 +37,16 @@ export class AuthService {
     const User = await this.prisma.user.findUnique({
       where: {
         id,
-      }, include: {
-        roles: true
       }
-
     });
+
     console.log(role)
-    if (!User?.roles) {
+    if (!User || !User?.roles) {
       console.log('No roles found for the user');
       throw new UnauthorizedException('Login to the dashboard is not allowed');
     }
 
-    const userRole = User.roles.find((userRole) => userRole.name === role);
-    // console.log(userRole);
-    if (!userRole || role !== userRole.name) {
+    if (role !== User.roles) {
       console.log('Unauthorized role');
       throw new UnauthorizedException('Login to the dashboard is not allowed');
     }
@@ -82,10 +78,11 @@ export class AuthService {
 
   async validateUser(payload: SignInDto) {
     const { username, password } = payload;
+    console.log(username, password);
     return this.prisma.user
       .findUnique({
         where: {
-          mobileNumber: username,
+          email: username,
           isTrash: false,
           accounts: {
             some: {
@@ -168,72 +165,7 @@ export class AuthService {
             isNot: undefined,
           },
         },
-        include: {
-          user: {
-            include: {
-              studyMaterial: {
-                where: {
-                  isTrash: false,
-                },
-              },
-              reviews: {
-                where: {
-                  isTrash: false,
-                },
-              },
-              purchase: {
-                where: {
-                  isTrash: false,
-                },
-              },
-              studentProgress: {
-                where: {
-                  isTrash: false,
-                },
-              },
-              teacherProgress: {
-                where: {
-                  isTrash: false,
-                },
-              },
-              roles: true,
-              studyCourses: {
-                where: {
-                  isTrash: false,
-                },
-                include: {
-                  categories: {
-                    where: {
-                      isTrash: false,
-                    },
-                  },
-                  reviews: {
-                    where: {
-                      isTrash: false,
-                    },
-                  },
-                  module: {
-                    where: {
-                      isTrash: false,
-                    },
-                    include: {
-                    lectures:{
-                      include:{
-                        live:true
-                      }
-                    }
-                    },
-                  },
-                },
-              },
-              teachCourses: {
-                where: {
-                  isTrash: false,
-                },
-              },
-            },
-          },
-        },
+       
       })
       .then((session) => {
         if (!session) throw new NotFoundException();
@@ -267,7 +199,7 @@ export class AuthService {
         .create({
           data: {
             expiryAt,
-            role: RoleType.STUDENT,
+            role: RoleType.USER,
             user: {
               connect: {
                 id,
