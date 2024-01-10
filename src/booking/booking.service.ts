@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prismaORM/prisma.service";
 import { BookingDto } from "./dto/booking.dto";
 import { v4 as uuidv4 } from "uuid";
@@ -19,6 +19,9 @@ export class BookingService {
     async bookRoom(details: BookingDto): Promise<ReturnMessage> {
         try {
             const { floorId, roomId, ...rest } = details;
+            if(!floorId || !roomId) {
+                throw new NotFoundException("Room Not Found");
+            }
             //check if room is already booked or not
             let isAlreadyBoooked = await this.prisma.rooms.findUnique({
                 where: {
@@ -45,12 +48,12 @@ export class BookingService {
                     ...rest,
                     isBooked: BookingStatusType.notConfirmed,
                     bookingId,
-                    floor: {
+                    floors: {
                         connect: {
                             id: floorId,
                         },
                     },
-                    room: {
+                    rooms: {
                         connect: {
                             id: roomId,
                         },

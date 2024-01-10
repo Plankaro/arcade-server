@@ -16,9 +16,9 @@ export class BookingDto {
     @IsMongoId()
     roomId: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
-    userName: string;
+    userName?: string;
 
     @IsNotEmpty()
     @IsString()

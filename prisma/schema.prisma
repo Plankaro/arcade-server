@@ -53,8 +53,8 @@ model Booking {
   isBooked      BookingStatusType @default(pending)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  room          Rooms[]
-  floor         Floor[]
+  rooms          Rooms[]
+  floors         Floor[]
 
   @@map("bookings")
 }

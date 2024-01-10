@@ -22,8 +22,8 @@ export class AdminService {
         isTrash: false,
       },
       include: {
-        floor: true,
-        room: true
+        floors: true,
+        rooms: true,
       },
     });
   }
@@ -31,20 +31,21 @@ export class AdminService {
   async getAllBookingHistory(): Promise<any> {
     return await this.prisma.booking.findMany({
       where: {
-        isTrash: true
-      },include:{
-        floor:{
-          where:{
-            isTrash:false,
+        isTrash: true,
+      },
+      include: {
+        floors: {
+          where: {
+            isTrash: false,
           },
         },
-        room:{
-          where:{
-            isTrash:false,
-          }
-        }
-      }
-    })
+        rooms: {
+          where: {
+            isTrash: false,
+          },
+        },
+      },
+    });
   }
 
   async confirmBooking(details: ConfirmBookingDto): Promise<ReturnMessage> {
@@ -58,52 +59,75 @@ export class AdminService {
         },
       });
       if (!isBooked) {
-        throw new ConflictException("Booking not found");
+        throw new NotFoundException("Booking not found");
       }
       if (details.isBooked === "pending") {
-        console.log("called")
-        await this.prisma.booking.update({
-          where: {
-            id: bookingId
-          },
-          data: {
-            isTrash: true,
-          }
-        }).then(async () => {
-          await this.prisma.rooms.update({
+        console.log("called");
+        await this.prisma.booking
+          .update({
             where: {
-              id: roomId
+              id: bookingId,
             },
             data: {
-              isBooked: BookingStatusType.pending
-            }
+              isTrash: true,
+            },
           })
-        })
-
-
-
-      } else {
-        await this.prisma.booking.update({
-          where: {
-            isTrash: false,
-            id: bookingId,
-          },
-          data: {
-            ...rest
-          },
-        }).then(async () => {
-          await this.prisma.rooms.update({
+          .then(async () => {
+            await this.prisma.rooms.update({
+              where: {
+                id: roomId,
+              },
+              data: {
+                isBooked: BookingStatusType.pending,
+              },
+            });
+          });
+      } else if (details.isBooked === "cancelled") {
+        await this.prisma.rooms
+          .update({
             where: {
               isTrash: false,
-              id: roomId
+              id: roomId,
             },
             data: {
-              ...rest
-            }
+              isBooked: BookingStatusType.pending,
+            },
           })
-        })
+          .then(async () => {
+            await this.prisma.booking.update({
+              where: {
+                isTrash: false,
+                id: bookingId,
+              },
+              data: {
+                isTrash: true,
+                isBooked: BookingStatusType.cancelled,
+              },
+            });
+          });
+      } else {
+        await this.prisma.booking
+          .update({
+            where: {
+              isTrash: false,
+              id: bookingId,
+            },
+            data: {
+              ...rest,
+            },
+          })
+          .then(async () => {
+            await this.prisma.rooms.update({
+              where: {
+                isTrash: false,
+                id: roomId,
+              },
+              data: {
+                ...rest,
+              },
+            });
+          });
       }
-
 
       return {
         success: true,
@@ -159,13 +183,18 @@ export class AdminService {
   getAllProperty(): Promise<any> {
     return this.prisma.property.findMany({
       select: {
+        id:true,
         type: true,
         floors: {
           select: {
+            id:true,
             name: true,
             rooms: {
               select: {
+                id:true,
                 name: true,
+                isBooked:true,
+                lock:true,
               },
             },
           },
