@@ -28,7 +28,7 @@ const config = new ConfigService<EnvironmentVariables>()
     }),
     PrismaModule,
     CloudinaryModule,
-
+    AuthModule,
     UserModule,
     BookingModule,
     AdminModule,
