@@ -45,7 +45,7 @@ export class BookingService {
             //create booking
             await this.prisma.booking.create({
                 data: { 
-                    
+
                     ...rest,
                     isBooked: BookingStatusType.notConfirmed,
                     bookingId,
@@ -78,6 +78,7 @@ export class BookingService {
                 message: "boooking created successfull",
             };
         } catch (err) {
+            // console.log(err)
             return {
                 success: false,
                 message: err.message ? err.message : "booking creation failed",
