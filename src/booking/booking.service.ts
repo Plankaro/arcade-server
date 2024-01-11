@@ -44,7 +44,8 @@ export class BookingService {
            
             //create booking
             await this.prisma.booking.create({
-                data: {
+                data: { 
+                    
                     ...rest,
                     isBooked: BookingStatusType.notConfirmed,
                     bookingId,
