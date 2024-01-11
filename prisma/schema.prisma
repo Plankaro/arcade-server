@@ -46,6 +46,7 @@ model Booking {
   type          PropertyType
   email         String            @unique
   userName      String?
+  mobileNumber  String?
   firstName     String
   lastName      String
   description   String?
@@ -53,8 +54,8 @@ model Booking {
   isBooked      BookingStatusType @default(pending)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  rooms          Rooms[]
-  floors         Floor[]
+  rooms         Rooms[]
+  floors        Floor[]
 
   @@map("bookings")
 }

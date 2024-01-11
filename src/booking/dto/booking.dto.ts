@@ -11,6 +11,10 @@ export class BookingDto {
     @IsMongoId()
     floorId: string;
 
+    @IsOptional()
+    @IsString()
+    mobileNumber?: string;
+
     @IsNotEmpty()
     @IsString()
     @IsMongoId()
