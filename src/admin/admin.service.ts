@@ -53,18 +53,18 @@ export class AdminService {
       // console.log(details)
       const { bookingId, roomId, ...rest } = details;
       console.log(details)
-      if(details.isBooked !== "locked"){
+      if (details.isBooked !== "locked") {
         // let isAllreadyBooked ;
-         
-      const  isAllreadyBooked = await this.prisma.booking.findUnique({
-         where: {
-           isTrash: false,
-           id: bookingId,
-         },
-       });
-       if (!isAllreadyBooked) {
-         throw new NotFoundException("Booking not found");
-       }
+
+        const isAllreadyBooked = await this.prisma.booking.findUnique({
+          where: {
+            isTrash: false,
+            id: bookingId,
+          },
+        });
+        if (!isAllreadyBooked) {
+          throw new NotFoundException("Booking not found");
+        }
       }
       if (details.isBooked === "pending") {
         console.log("called");
@@ -197,7 +197,8 @@ export class AdminService {
     }
   }
 
-  getAllProperty(PropertyType: PropertyTypes): Promise<any> {
+   getAllProperty(PropertyType: PropertyTypes): Promise<any> {
+
     return this.prisma.property.findMany({
       where: {
         isTrash: false,
@@ -218,6 +219,7 @@ export class AdminService {
                 isBooked: true,
                 lock: true,
               },
+
             },
           },
         },

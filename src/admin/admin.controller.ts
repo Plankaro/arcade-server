@@ -33,6 +33,8 @@ export class AdminController {
         return this.adminService.getAllDetails()
     }
     
+
+    @SkipJwt()
     @Get("/:type")
     getAllProperty(@Param() PropertyType: PropertyTypes): Promise<any> {
         return this.adminService.getAllProperty(PropertyType)

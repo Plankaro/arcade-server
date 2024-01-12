@@ -21,8 +21,8 @@ const config = new ConfigService<EnvironmentVariables>()
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      envFilePath:
-        config.get("NODE_ENV") === "production" ? ".env" : ".env.local",
+      envFilePath:[".env"],
+        // config.get("NODE_ENV") === "production" ? ".env" : ".env.local",
       cache: true,
       validate,
     }),
