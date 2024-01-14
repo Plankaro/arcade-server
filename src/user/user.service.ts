@@ -31,7 +31,7 @@ export class UserService {
     private config: ConfigService<EnvironmentVariables>,
     private cloudinary: CloudinaryService,
     private readonly emailservice: EmailService,
-  ) {}
+  ) { }
 
   async createUser(role: RoleType, data: CreateUserDto) {
     const { email, firstName, mobileNumber, image, password, ...rest } = data;
@@ -46,7 +46,7 @@ export class UserService {
       );
       const tempMobileNumber = mobileNumber.substring(
         mobileNumber.length -
-          (tempFirstName.length >= 4 ? 4 : 4 + (4 - tempFirstName.length)),
+        (tempFirstName.length >= 4 ? 4 : 4 + (4 - tempFirstName.length)),
         mobileNumber.length,
       );
       tempPassword = `${tempFirstName}@${tempMobileNumber}`;
@@ -78,15 +78,15 @@ export class UserService {
             mobileNumber,
             ...(imageUpload &&
               imageUpload.url && {
-                image: {
-                  set: {
-                    name: imageUpload.original_filename,
-                    url: imageUpload.url,
-                  },
+              image: {
+                set: {
+                  name: imageUpload.original_filename,
+                  url: imageUpload.url,
                 },
-              }),
+              },
+            }),
             ...rest,
-           roles:RoleType.ADMIN,
+            roles: RoleType.ADMIN,
             accounts: {
               create: {
                 provider: AccountProviderType.CREDENTIAL,
@@ -126,18 +126,18 @@ export class UserService {
         ...(image &&
           imageUpload &&
           imageUpload.url && {
-            image: {
-              set: {
-                name: imageUpload.original_filename,
-                url: imageUpload.url,
-              },
+          image: {
+            set: {
+              name: imageUpload.original_filename,
+              url: imageUpload.url,
             },
-          }),
+          },
+        }),
       },
     });
   }
 
- 
+
 
   getAllUsers(params: GetUserByRoleDto) {
     const { role } = params;
@@ -320,5 +320,14 @@ export class UserService {
       });
   }
 
+  getUserById(params: GetUserByDto) {
+    const { id } = params;
+    return this.prisma.user.findUnique({
+      where: {
+        id,
+        isTrash: false,
+      },
+    });
+  }
 
 }

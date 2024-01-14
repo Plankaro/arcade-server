@@ -86,5 +86,11 @@ export class UserController {
     return this.userService.deleteUser(body);
   }
 
+  
+  @Get('/:id')
+  getUserById(@Param() params: GetUserByDto) {
+    return this.userService.getUserById(params);
+  }
+
 
 }
