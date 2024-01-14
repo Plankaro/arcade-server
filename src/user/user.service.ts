@@ -168,44 +168,44 @@ export class UserService {
   }
 
   async sendOtp(email: string) {
-    // try {
-    //   const otpData = await this.prisma.otp.findFirst({
-    //     where: {
-    //       email,
-    //     },
-    //   });
-    //   if (otpData) {
-    //     await this.prisma.otp.delete({
-    //       where: {
-    //         email,
-    //       },
-    //     });
-    //   }
+    try {
+      const otpData = await this.prisma.otp.findFirst({
+        where: {
+          email,
+        },
+      });
+      if (otpData) {
+        await this.prisma.otp.delete({
+          where: {
+            email,
+          },
+        });
+      }
 
-    //   function generateSixDigitOTP(): number {
-    //     const min = 100000;
-    //     const max = 999999;
-    //     return Math.floor(Math.random() * (max - min + 1)) + min;
-    //   }
+      function generateSixDigitOTP(): number {
+        const min = 100000;
+        const max = 999999;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
 
-    //   const otp: number = generateSixDigitOTP();
-    //   await this.emailservice.sendOTPEmail(email, otp);
-    //   await this.prisma.otp.create({
-    //     data: {
-    //       email,
-    //       otp,
-    //     },
-    //   });
-    //   return {
-    //     success: true,
-    //     message: 'otp send sucessfully',
-    //   };
-    // } catch (err) {
-    //   return new InternalServerErrorException({
-    //     success: false,
-    //     message: 'otp send failed',
-    //   });
-    // }
+      const otp: number = generateSixDigitOTP();
+      await this.emailservice.sendOTPEmail(email, otp);
+      await this.prisma.otp.create({
+        data: {
+          email,
+          otp,
+        },
+      });
+      return {
+        success: true,
+        message: 'otp send sucessfully',
+      };
+    } catch (err) {
+      return new InternalServerErrorException({
+        success: false,
+        message: 'otp send failed',
+      });
+    }
   }
 
   async verifyOtp(email: string, otp: number): Promise<any> {
