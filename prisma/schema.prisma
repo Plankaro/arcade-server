@@ -19,7 +19,11 @@ enum RoleType {
   ADMIN
   USER
 }
-
+type Image {
+  name      String
+  url       String
+  createdAt DateTime @default(now())
+}
 enum AccountProviderType {
   GOOGLE
   CREDENTIAL
@@ -104,6 +108,7 @@ model User {
   mobileNumber  String    @unique
   country       String?
   region        String?
+   image                 Image?
   emailVerified Boolean   @default(false)
   accounts      Account[]
   Session       Session[]
