@@ -15,7 +15,7 @@ export class EmailService {
       });
 
       const info = await transporter.sendMail({
-        from: 'GPFTPC <mailt6486@gmail.com>',
+        from: 'ARCADE <mailt6486@gmail.com>',
         to: toEmail,
         subject: 'Verification Code',
         html: `

@@ -209,23 +209,23 @@ export class UserService {
   }
 
   async verifyOtp(email: string, otp: number): Promise<any> {
-    // try {
-    //   const otpData = await this.prisma.otp.findFirst({
-    //     where: {
-    //       AND: [{ email }, { otp }],
-    //     },
-    //   });
-    //   if (!otpData) {
-    //     throw new NotFoundException({ message: 'No otp found' });
-    //   }
+    try {
+      const otpData = await this.prisma.otp.findFirst({
+        where: {
+          AND: [{ email }, { otp }],
+        },
+      });
+      if (!otpData) {
+        throw new NotFoundException({ message: 'No otp found' });
+      }
 
-    //   return {
-    //     success: true,
-    //     message: 'otp successfully verified',
-    //   };
-    // } catch (err) {
-    //   throw new InternalServerErrorException(err);
-    // }
+      return {
+        success: true,
+        message: 'otp successfully verified',
+      };
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
   }
 
   async forgotPassword(data: ForgotPassword): Promise<any> {
