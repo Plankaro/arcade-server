@@ -105,26 +105,61 @@ export class UserService {
       });
   }
 
+  // async updateUser(role: RoleType, data: UpdateUserDto) {
+  //   const { id, image, ...rest } = data;
+  //   console.log("called")
+  //   const imageUpload = image
+  //     ? (await this.cloudinary.uploadFiles(image))[0]
+  //     : undefined;
+  //   return this.prisma.user.update({
+  //     where: {
+  //       id,
+  //       isTrash: false,
+  //       // roles: {
+  //       //   some: {
+  //       //     name: role,
+  //       //   },
+  //       // },
+  //     },
+  //     data: {
+  //       ...rest,
+  //       ...(image &&
+  //         imageUpload &&
+  //         imageUpload.url && {
+  //         image: {
+  //           set: {
+  //             name: imageUpload.original_filename,
+  //             url: imageUpload.url,
+  //           },
+  //         },
+  //       }),
+  //     },
+  //   });
+  // }
+
   async updateUser(role: RoleType, data: UpdateUserDto) {
+    console.log(role, data);
     const { id, image, ...rest } = data;
-    console.log("called")
-    const imageUpload = image
-      ? (await this.cloudinary.uploadFiles(image))[0]
-      : undefined;
-    return this.prisma.user.update({
+    const users = await this.prisma.user.findUnique({
       where: {
         id,
         isTrash: false,
-        // roles: {
-        //   some: {
-        //     name: role,
-        //   },
-        // },
+        roles: role
+      },
+    });
+    // console.log(users)
+    const imageUpload = (await this.cloudinary.uploadFiles(image))[0];
+    console.log(imageUpload);
+
+    return await this.prisma.user.update({
+      where: {
+        id,
+        isTrash: false,
+        roles: role,
       },
       data: {
         ...rest,
-        ...(image &&
-          imageUpload &&
+        ...(imageUpload &&
           imageUpload.url && {
           image: {
             set: {
@@ -136,7 +171,6 @@ export class UserService {
       },
     });
   }
-
 
 
   getAllUsers(params: GetUserByRoleDto) {
