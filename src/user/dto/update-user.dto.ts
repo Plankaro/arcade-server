@@ -19,8 +19,7 @@ export class UpdateUserDto {
 
   @ApiProperty({ description: 'User email', example: 'user@example.com' })
   @IsOptional()
-  @IsEmail()
-  email: string;
+  email?: string;
 
   @ApiProperty({ description: "User's first name", example: 'John' })
   @IsOptional()
@@ -30,31 +29,28 @@ export class UpdateUserDto {
   @ApiProperty({ description: 'User last name', example: 'Doe' })
   @IsOptional()
   @IsString()
-  lastName: string;
+  lastName?: string;
 
-  @ApiProperty({ description: 'User mobile number', example: '+1234567890' })
   @IsOptional()
-  @IsMobilePhone('en-IN', {}, { message: 'Mobile Number is not valid' })
   @IsString()
   @Type(() => String)
-  mobileNumber: string;
+  mobileNumber?: string;
 
   @ApiProperty({ description: 'User country', example: 'USA' })
   @IsOptional()
   @IsString()
-  country: string;
+  country?: string;
 
   @ApiProperty({ description: 'User region', example: 'India' })
   @IsOptional()
   @IsString()
-  region: string;
+  region?: string;
 
   @ApiProperty({
     description: 'User image',
     example: { url: 'https://example.com/profile.jpg' },
   })
   @IsOptional()
-  @ValidateNested()
   @Type(() => Image)
   image: Image;
 }

@@ -102,8 +102,8 @@ model User {
   roles         RoleType
   lastName      String
   mobileNumber  String    @unique
-  country       String
-  region        String
+  country       String?
+  region        String?
   emailVerified Boolean   @default(false)
   accounts      Account[]
   Session       Session[]
