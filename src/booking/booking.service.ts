@@ -8,6 +8,7 @@ import { BookingStatusType } from "@prisma/client";
 import { ConfigService } from "@nestjs/config";
 import { EnvironmentVariables } from "src/env.validation";
 import { FilterDto } from "./dto/filterData.dto";
+import lodash, { kebabCase } from "lodash";
 
 @Injectable()
 export class BookingService {
@@ -19,7 +20,7 @@ export class BookingService {
     async bookRoom(details: BookingDto): Promise<ReturnMessage> {
         try {
             const { floorId, roomId, ...rest } = details;
-            if(!floorId || !roomId) {
+            if (!floorId || !roomId) {
                 throw new NotFoundException("Room Not Found");
             }
             //check if room is already booked or not
@@ -32,29 +33,29 @@ export class BookingService {
                     },
                 },
             });
-            
-            
+
+
             //if already booked then throw exception
             if (isAlreadyBoooked) {
                 throw new ConflictException("This Room already booked");
             }
-            
+
             //generate unique id for each room created 
             const bookingId = uuidv4();
-           
+
             //create booking
             await this.prisma.booking.create({
-                data: { 
+                data: {
 
                     ...rest,
                     isBooked: BookingStatusType.notConfirmed,
                     bookingId,
-                    floors: {
+                    floor: {
                         connect: {
                             id: floorId,
                         },
                     },
-                    rooms: {
+                    room: {
                         connect: {
                             id: roomId,
                         },
@@ -85,6 +86,7 @@ export class BookingService {
             };
         }
     }
+ 
 
     async getAllPropertyDetails(filterData: FilterDto): Promise<any> {
         try {
@@ -93,8 +95,14 @@ export class BookingService {
             // const roomName = room.split("-").join(" ")
             console.log(type, floor, Type, room);
 
-            const roomsWhere = room ? { isTrash: false, name: room.split("-").join(" ") } : { isTrash: false };
-
+            const capitalizeFloor = (floor) => {
+                return floor.toLowerCase().replace(/(^|-)([a-z])/g, (match, boundary, letter) => {
+                  return boundary + letter.toUpperCase();
+                });
+              };
+            
+console.log(kebabCase("floor-1"))
+console.log(capitalizeFloor("floor-1"))
 
             return await this.prisma.property.findMany({
                 where: {
@@ -102,23 +110,25 @@ export class BookingService {
                     type: Type,
                 },
                 select: {
-                    id:true,
+                    id: true,
                     isTrash: true,
                     type: true,
                     floors: {
-                       
                         where: {
                             isTrash: false,
-                            name: floor,
+                            name: capitalizeFloor(floor),
                         },
                         select: {
                             isTrash: true,
                             name: true,
-                            id:true,
+                            id: true,
                             rooms: {
-                                where: roomsWhere,
+                                where: {
+                                    isTrash: false,
+                                    name: room,
+                                },
                                 select: {
-                                    id:true,
+                                    id: true,
                                     isTrash: true,
                                     name: true,
                                     isBooked: true,
@@ -130,6 +140,7 @@ export class BookingService {
                 },
             });
         } catch (err) {
+            console.error(err);
             return {
                 success: false,
                 message:

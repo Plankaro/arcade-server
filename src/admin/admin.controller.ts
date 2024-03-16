@@ -10,6 +10,7 @@ import { SkipJwt } from 'src/auth/decorators/jwt/skip-jwt.decorator';
 export class AdminController {
     constructor(private readonly adminService: AdminService) { }
 
+    @SkipJwt()
     @Get()
     getAllBooking(): Promise<any> {
         return this.adminService.getAllBooking()
@@ -23,6 +24,7 @@ export class AdminController {
         return this.adminService.confirmBooking(details)
     }
 
+    @SkipJwt()
     @Post("/property")
     addProperty(@Body() details: PropertyDto): Promise<ReturnMessage> {
         return this.adminService.addProperty(details)

@@ -17,6 +17,7 @@ export class BookingController {
     ): Promise<ReturnMessage> {
        return this.bookingService.bookRoom(bookingDetails)
     }
+   
 
     @SkipJwt()
     @Get()

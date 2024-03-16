@@ -58,10 +58,12 @@ model Booking {
   description   String?
   lock          LockedRoomType    @default(normal)
   isBooked      BookingStatusType @default(pending)
+  floor         Floor?            @relation(fields: [floorId], references: [id])
+  floorId       String?           @db.ObjectId()
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  rooms         Rooms[]
-  floors        Floor[]
+  room        Rooms             @relation(fields: [roomsId], references: [id])
+  roomsId       String            @unique @db.ObjectId()
 
   @@map("bookings")
 }
@@ -125,15 +127,14 @@ model Otp {
 }
 
 model Rooms {
-  id        String            @id @default(auto()) @map("_id") @db.ObjectId()
-  isTrash   Boolean           @default(false)
-  name      String            @unique
-  lock      LockedRoomType    @default(normal)
-  isBooked  BookingStatusType @default(pending)
-  Floor     Floor?            @relation(fields: [floorId], references: [id])
-  floorId   String?           @db.ObjectId()
-  Booking   Booking?          @relation(fields: [bookingId], references: [id])
-  bookingId String?           @db.ObjectId()
+  id       String            @id @default(auto()) @map("_id") @db.ObjectId()
+  isTrash  Boolean           @default(false)
+  name     String            @unique
+  lock     LockedRoomType    @default(normal)
+  isBooked BookingStatusType @default(pending)
+  Floor    Floor?            @relation(fields: [floorId], references: [id])
+  floorId  String?           @db.ObjectId()
+  booking  Booking?
 
   @@map("rooms")
 }
@@ -145,8 +146,7 @@ model Floor {
   rooms      Rooms[]
   Property   Property? @relation(fields: [propertyId], references: [id])
   propertyId String?   @db.ObjectId()
-  Booking    Booking?  @relation(fields: [bookingId], references: [id])
-  bookingId  String?   @db.ObjectId()
+  booking    Booking[]
 
   @@map("floors")
 }

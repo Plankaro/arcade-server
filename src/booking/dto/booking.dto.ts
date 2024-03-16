@@ -36,7 +36,6 @@ export class BookingDto {
     @IsString()
     description?: string;
 
-    @IsNotEmpty()
-    @IsEmail()
+    @IsOptional()
     email: string;
 }

@@ -22,8 +22,8 @@ export class AdminService {
         isTrash: false,
       },
       include: {
-        floors: true,
-        rooms: true,
+        floor: true,
+        room: true,
       },
     });
   }
@@ -34,16 +34,12 @@ export class AdminService {
         isTrash: true,
       },
       include: {
-        floors: {
+        floor: {
           where: {
             isTrash: false,
           },
         },
-        rooms: {
-          where: {
-            isTrash: false,
-          },
-        },
+        room:true
       },
     });
   }
@@ -53,7 +49,7 @@ export class AdminService {
       // console.log(details)
       const { bookingId, roomId, ...rest } = details;
       console.log(details)
-      if (details.isBooked !== "locked") {
+      if (details.isBooked !== "locked" && details.isBooked !== "notConfirmed") {
         // let isAllreadyBooked ;
 
         const isAllreadyBooked = await this.prisma.booking.findUnique({
@@ -122,6 +118,18 @@ export class AdminService {
         })
 
 
+      }else if (details.isBooked == "notConfirmed") {
+        console.log("calling notConfirmed");
+        const result = await this.prisma.rooms.update({
+          where: {
+            isTrash: false,
+            id: roomId
+          }, data: {
+            isBooked: BookingStatusType.pending,
+            lock: LockedRoomType.normal
+          }
+        })
+        console.log("🚀 ~ AdminService ~ confirmBooking ~ result:", result)
       } else {
         await this.prisma.booking
           .update({
